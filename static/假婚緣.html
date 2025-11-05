@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>假婚緣 — 互動防詐遊戲</title>
+<style>
+  :root{
+    --bg:#fff5f8;          /* 粉系背景 */
+    --panel:#ffffff;       /* 面板白 */
+    --text:#31111d;        /* 文字深酒紅 */
+    --muted:#8b5e6b;       /* 次要文字玫瑰褐 */
+    --btn:#e91e63;         /* 主要按鈕 粉紅 */
+    --btn-hover:#f06292;   /* 按鈕 Hover 亮粉 */
+    --accent:#ad1457;      /* 重點色 深梅紅 */
+    --radius:12px;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --maxw:1100px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC","Heiti TC", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  .app{max-width:var(--maxw); margin:24px auto; padding:0 16px}
+
+  .header{display:flex; align-items:center; gap:12px; margin-bottom:16px}
+  .title{font-size:28px; font-weight:700; color:var(--accent)}
+  .subtitle{color:var(--muted)}
+
+  .layout{display:grid; grid-template-columns: 1fr; gap:16px}
+  @media (min-width: 980px){
+    .layout{grid-template-columns: 1fr 360px}
+  }
+
+  .card{background:var(--panel); border-radius:var(--radius); box-shadow:var(--shadow)}
+  .msg{padding:16px; min-height:220px}
+  .msg h3{margin:0 0 8px 0; font-size:18px; color:#4a1727}
+  .msg p{margin:0; line-height:1.7}
+
+  .stats{padding:16px; display:flex; flex-wrap:wrap; gap:12px 16px}
+  /* 讓原本的 statline 直接變成粉色膠囊卡 */
+  .statline{
+    margin:0; font-weight:700;
+    padding:10px 12px; background:#fde7ef; border-radius:10px; font-size:15px;
+    color:#4a1727; box-shadow: 0 1px 0 rgba(173,20,87,.06) inset;
+  }
+
+  .actions{padding:16px; display:flex; flex-direction:column; gap:12px}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-height:44px; padding:10px 14px; border-radius:10px; border:none; cursor:pointer;
+    color:#fff; background:var(--btn); font-weight:700;
+    transition:.15s transform ease, .15s background ease, .15s box-shadow ease;
+    text-align:center; letter-spacing:.2px;
+    box-shadow:0 6px 16px rgba(233,30,99,.18);
+  }
+  .btn:hover{background:var(--btn-hover); transform:translateY(-1px)}
+  .btn:disabled{opacity:.6; cursor:not-allowed; transform:none; box-shadow:none}
+
+  .footer{display:flex; justify-content:center; margin:22px 0}
+
+  .pill{display:inline-block; font-size:12px; color:#5b2a38; background:#ffe0ea; border-radius:999px; padding:4px 10px; margin-left:8px}
+
+  .hint{padding:0 16px 16px; color:var(--muted); font-size:14px}
+  .tips{padding:16px 16px 24px; line-height:1.8}
+  .tips li{margin:6px 0; color:#4a1727}
+
+  .badge{display:inline-block; background:#fbe3ee; color:#4a1727; padding:4px 10px; border-radius:999px; font-size:12px; margin-right:8px}
+</style>
+</head>
+<body>
+  <div class="app">
+    <div class="layout">
+      <!-- 左側：訊息區 + 結局/教學 -->
+      <div>
+        <div class="card msg" id="msgCard">
+          <h3 id="msgTitle">劇情</h3>
+          <p id="msgBody">載入中…</p>
+        </div>
+
+        <div class="card stats" id="statsCard">
+          <div class="statline" id="trust">信任指數：—</div>
+          <div class="statline" id="savings">存款：—</div>
+          <div class="statline" id="loss">已損失：—</div>
+        </div>
+
+        <div class="card tips" id="finalCard" style="display:none">
+          <div id="finalOutcome" style="font-weight:700; margin-bottom:10px"></div>
+          <div id="finalSummary" style="margin-bottom:12px"></div>
+          <div style="margin-bottom:6px; font-weight:700; color:var(--accent)">防詐提示：</div>
+          <ul>
+            <li>在線交友時建立情感連結後的金錢請求要非常警覺。</li>
+            <li>要求原始單據並親自向機構或第三方核實，不要只看截圖。</li>
+            <li>切勿替對方匯款到陌生帳戶或代辦貸款/匯款。</li>
+            <li>遇到可疑情況立即向銀行與警方報案，並保存所有通訊與交易憑證。</li>
+            <li>分享經驗給親友，建立防詐互助網絡。</li>
+          </ul>
+          <div class="footer">
+            <button class="btn" id="restartBtn">重新開始遊戲</button>
+          </div>
+        </div>
+
+        <div class="hint" id="hint">提示：按右側選項推進劇情；部分事件含隨機性。</div>
+      </div>
+
+      <!-- 右側：行動選項 -->
+      <div>
+        <div class="card actions" id="actions"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// —— 原本的 JS 劇情邏輯完全保留 ——
+const Game = (() => {
+  const state = {
+    player: { trust: 40, savings: 200000, loss: 0, history: [] },
+    phase: 'intro',
+    msgTitle: '劇情',
+    msg: '',
+    result: null,
+    timers: [],
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const fmt = (n) => n.toLocaleString('zh-Hant-TW');
+  const clearTimers = () => { state.timers.forEach(clearTimeout); state.timers = []; };
+
+  function updateStats(){
+    $("trust").textContent = `信任指數：${state.player.trust}`;
+    $("savings").textContent = `存款：${fmt(state.player.savings)}`;
+    $("loss").textContent = `已損失：${fmt(state.player.loss)}`;
+  }
+
+  function setMessage(title, body){
+    $("msgTitle").textContent = title;
+    $("msgBody").textContent = body;
+  }
+
+  function setActions(list){
+    const box = $("actions");
+    box.innerHTML = '';
+    list.forEach(it => {
+      const btn = document.createElement('button');
+      btn.className = 'btn';
+      btn.textContent = it.label;
+      btn.onclick = it.onClick;
+      box.appendChild(btn);
+    });
+  }
+
+  function showFinal(){
+    const bad = new Set(['scammed_heavily','borrowed','immediate_vanish','negotiate_fail','scammed_to_zero']);
+    const good = new Set(['stop_and_report','report_success','partial_recover','seek_help_success']);
+    let outcome;
+
+    if (bad.has(state.result) || state.player.loss > state.player.savings){
+      outcome = '結局：你遭受重大損失或增加負擔。';
+    } else if (good.has(state.result) || state.player.loss === 0){
+      outcome = '結局：你成功避免或部分追回損失。';
+    } else {
+      outcome = '結局：情況混合，請檢視下方教學建議。';
+    }
+
+    $("finalOutcome").textContent = outcome;
+    $("finalSummary").textContent = `最終存款：${fmt(state.player.savings)}　｜　最終損失：${fmt(state.player.loss)}　｜　信任指數：${state.player.trust}`;
+    $("finalCard").style.display = '';
+    $("restartBtn").onclick = () => restart();
+    setActions([]);
+    setMessage('遊戲結束', '感謝體驗！請參考下方防詐教學。');
+  }
+
+  function setupIntro(){
+    state.phase = 'intro';
+    state.msg = '你是林瑩，在徵婚社團認識一位自稱志遠的人。他言談溫和，常傳貼心話語，你們私訊互動並見過幾次面，逐漸建立信任。';
+    setMessage('劇情', state.msg);
+    setActions([
+      { label: '繼續與志遠保持聯絡（增進信任）', onClick: advanceRelationship },
+      { label: '保持距離並觀察（保持警戒）', onClick: avoidRelationship },
+    ]);
+    updateStats();
+  }
+
+  function advanceRelationship(){
+    state.player.history.push(['intro','advance']);
+    state.player.trust += 15;
+    state.phase = 'chat';
+    state.msg = '志遠對你體貼有加，幾次見面後他開始對你談到家裡的突發狀況，有天他私訊說家庭臨時發生醫療事故，需要短期周轉，希望你幫忙。';
+    setMessage('劇情', state.msg);
+    setActions([]);
+    updateStats();
+    state.timers.push(setTimeout(handleEmergency, 900));
+  }
+
+  function avoidRelationship(){
+    state.player.history.push(['intro','avoid']);
+    state.player.trust -= 5;
+    state.msg = '你選擇保持距離，志遠偶爾會聯絡，但沒進一步的情感或金錢往來。';
+    setMessage('劇情', state.msg);
+    setActions([{ label: '結束（安全路線）', onClick: createFinalButton }]);
+    updateStats();
+  }
+
+  function handleEmergency(){
+    state.phase = 'emergency';
+    state.msg = '志遠表示家中有人急需醫療費用，他傳來醫院收據照片和所謂的匯款證明，並誠懇地說會很快還你。你會怎麼做？';
+    setMessage('劇情', state.msg);
+    setActions([
+      { label: '暫時信任並匯款協助（先幫忙）', onClick: sendMoney },
+      { label: '要求看原始證明，並親自聯絡醫院或親友驗證（求證）', onClick: askProof },
+      { label: '拒絕匯款，提供實質幫助但不涉及金錢（拒絕）', onClick: refuseMoney },
+    ]);
+  }
+
+  function sendMoney(){
+    state.player.history.push(['emergency','send']);
+    const amount = 120000;
+    if (amount > state.player.savings){
+      setMessage('提示', '你的存款不足以匯款這筆金額。');
+      setActions([{ label: '回到對話', onClick: handleEmergency }]);
+      return;
+    }
+    state.player.savings -= amount;
+
+    if (Math.random() < 0.85){
+      const smallReturn = Math.floor(amount * 0.03);
+      state.player.savings += smallReturn;
+      state.msg = `你匯了 ${fmt(amount)} 元，志遠如數回覆並回傳小額謝禮 ${fmt(smallReturn)} 元的截圖，你短暫放下防備，但事情可能才剛開始。`;
+      state.player.trust += 10;
+      state.result = 'got_small_return';
+    } else {
+      state.msg = '匯款後，志遠突然失聯，圖片與證明疑點重重，你感到被利用的恐懼。';
+      state.player.trust -= 20;
+      state.result = 'immediate_vanish';
+    }
+    setMessage('劇情', state.msg);
+    setActions([]);
+    updateStats();
+    state.timers.push(setTimeout(postEmergencyPhase, 900));
+  }
+
+  function askProof(){
+    state.player.history.push(['emergency','ask_proof']);
+    if (Math.random() < 0.6){
+      state.msg = '志遠提供了看似正式的醫院掃描單與親友安慰訊息，但你發現圖片有修圖痕跡。';
+      state.player.trust += 3;
+      state.result = 'proof_shown';
+    } else {
+      state.msg = '志遠閃躲並催促你不要拖延，強調要快匯款。他開始施壓。';
+      state.player.trust -= 8;
+      state.result = 'proof_refused';
+    }
+    setMessage('劇情', state.msg);
+    setActions([]);
+    updateStats();
+    state.timers.push(setTimeout(postEmergencyPhase, 900));
+  }
+
+  function refuseMoney(){
+    state.player.history.push(['emergency','refuse']);
+    state.msg = '你拒絕了匯款，並提出陪同探病或協助找社會資源等非金錢方式幫忙。志遠的態度產生變化。';
+    state.player.trust -= 5;
+    state.result = 'refused';
+    setMessage('劇情', state.msg);
+    setActions([]);
+    updateStats();
+    state.timers.push(setTimeout(postEmergencyPhase, 900));
+  }
+
+  function postEmergencyPhase(){
+    state.phase = 'decision';
+    const st = state.result;
+    if (st === 'got_small_return'){
+      state.msg = '你得到小額回饋，志遠接著提出更大的周轉需求，希望你再幫忙，並說會立刻還你。';
+      setActions([
+        { label: '再匯一大筆（信任升級）', onClick: escalateSend },
+        { label: '提出要看第三方證明（要求驗證）', onClick: askThirdParty },
+        { label: '暫停並向朋友/銀行/警方諮詢（求助）', onClick: seekHelp },
+      ]);
+    } else if (st === 'immediate_vanish' || st === 'proof_refused'){
+      state.msg = '狀況不佳：對方態度改變或失聯。你可以選擇立刻報警、嘗試談判或向親友借款應急。';
+      setActions([
+        { label: '立即向銀行與警方報案', onClick: report },
+        { label: '向親友借款或使用信用卡（高風險）', onClick: borrow },
+        { label: '嘗試私下聯繫對方/談判', onClick: negotiate },
+      ]);
+    } else if (st === 'proof_shown'){
+      state.msg = '對方提供的證據看似充分，但你注意到細節有疑問。接下來你會？';
+      setActions([
+        { label: '把證據拿去給醫院或第三方確認', onClick: verifyWithHospital },
+        { label: '相信並幫忙匯款', onClick: escalateSend },
+        { label: '暫停並先求助朋友/律師', onClick: seekHelp },
+      ]);
+    } else if (st === 'refused'){
+      state.msg = '你拒絕匯款，志遠的態度變冷淡，關係中斷。你避免了金錢損失。';
+      setActions([{ label: '結束並查看結局', onClick: createFinalButton }]);
+    } else {
+      setActions([{ label: '結束', onClick: createFinalButton }]);
+    }
+    setMessage('劇情', state.msg);
+    updateStats();
+  }
+
+  function escalateSend(){
+    state.player.history.push(['escalate','send']);
+    const amount = 250000;
+
+    if (amount > state.player.savings){
+      const drained = state.player.savings;
+      state.player.loss += drained;
+      state.player.savings = 0;
+      state.msg = '你在對方一再施壓與保證下，把帳戶裡僅存的資金全數轉出，結果資金被迅速拆分洗走，帳戶歸零。';
+      state.result = 'scammed_to_zero';
+      setMessage('劇情', state.msg);
+      updateStats();
+      setActions([]);
+      showFinal();
+      return;
+    }
+
+    state.player.savings -= amount;
+
+    if (Math.random() < 0.9){
+      state.msg = '你匯了更多錢後，志遠逐漸失聯，帳戶被人頭戶拆分，資金流向不明。';
+      state.player.loss += amount;
+      state.result = 'scammed_heavily';
+    } else {
+      const refund = Math.floor(amount * 0.5);
+      state.player.savings += refund;
+      state.msg = `情況幸運：部分金額 ${fmt(refund)} 元透過銀行或警方協助被追回，但事件仍造成傷害。`;
+      state.result = 'partial_recover';
+    }
+    setMessage('劇情', state.msg);
+    setActions([]);
+    updateStats();
+    state.timers.push(setTimeout(verifiedProcessing, 900));
+  }
+
+  function askThirdParty(){
+    state.player.history.push(['decision','ask_third']);
+    if (Math.random() < 0.7){
+      state.msg = '你聯絡醫院／親友核查，確認該醫療單據為偽造或與志遠提供的不符。';
+      state.result = 'verified_fake';
+    } else {
+      state.msg = '核查結果尚未明確，醫院回覆程序需時，志遠仍催促匯款。';
+      state.result = 'verify_delay';
+    }
+    setMessage('劇情', state.msg);
+    setActions([]);
+    state.timers.push(setTimeout(verifiedProcessing, 900));
+  }
+
+  function seekHelp(){
+    state.player.history.push(['decision','seek_help']);
+    if (Math.random() < 0.65){
+      const recovered = Math.floor(state.player.loss * 0.4);
+      state.player.savings += recovered;
+      state.player.loss -= recovered;
+      state.msg = '你向銀行與警方報案並提供證據，部分款項透過凍結與協助被追回。';
+      state.result = 'seek_help_success';
+    } else {
+      state.msg = '報案程序緩慢且繁瑣，資金追回有限但你保留了必要證據。';
+      state.result = 'seek_help_slow';
+    }
+    setMessage('劇情', state.msg);
+    setActions([]);
+    updateStats();
+    state.timers.push(setTimeout(verifiedProcessing, 900));
+  }
+
+  function report(){
+    state.player.history.push(['action','report']);
+    if (Math.random() < 0.6){
+      const recovered = Math.floor((state.player.loss + 0) * 0.35);
+      state.player.savings += recovered;
+      state.player.loss -= recovered;
+      state.msg = '你正式向警方與銀行報案，調查結果凍結部分資金，部分款項被追回。';
+      state.result = 'report_success';
+    } else {
+      state.msg = '警方受理但進展緩慢，資金追回有限。你被建議持續配合調查。';
+      state.result = 'report_slow';
+    }
+    setMessage('劇情', state.msg);
+    setActions([]);
+    updateStats();
+    state.timers.push(setTimeout(createFinalButton, 900));
+  }
+
+  function borrow(){
+    state.player.history.push(['action','borrow']);
+    const amount = 200000;
+    state.player.savings += amount;
+    state.player.loss += Math.floor(amount * 0.2);
+    state.msg = `你向親友或短期借貸借得 ${fmt(amount)} 元以挽救局面，但同時增加了額外負擔。`;
+    state.result = 'borrowed';
+    setMessage('劇情', state.msg);
+    setActions([]);
+    updateStats();
+    state.timers.push(setTimeout(createFinalButton, 900));
+  }
+
+  function negotiate(){
+    state.player.history.push(['action','negotiate']);
+    if (Math.random() < 0.25){
+      state.msg = '你與對方或其所謂窗口談判，對方答應部分退還，你勉強保住一部分資金。';
+      state.result = 'negotiate_success';
+      const recovered = 50000;
+      state.player.savings += recovered;
+      state.player.loss -= recovered;
+    } else {
+      state.msg = '談判失敗或對方失聯，局勢惡化。';
+      state.result = 'negotiate_fail';
+      state.player.loss += 100000;
+    }
+    setMessage('劇情', state.msg);
+    setActions([]);
+    updateStats();
+    state.timers.push(setTimeout(createFinalButton, 900));
+  }
+
+  function verifiedProcessing(){
+    const st = state.result;
+    if (st === 'verified_fake'){
+      state.msg = '核查之後證實為偽造文件，你立即停止金錢往來並向警方申告。';
+      state.player.trust -= 20;
+      state.result = 'stop_and_report';
+    } else if (st === 'verify_delay'){
+      state.msg = '核查需時，志遠繼續催促。你應該更謹慎。';
+    } else if (st === 'scammed_heavily'){
+      state.msg = '發現被大規模詐騙，資金已被拆分。你立刻報案並希望能追回部分款項。';
+    } else if (['partial_recover','seek_help_success','report_success','negotiate_success'].includes(st)){
+      state.msg = '你在努力與機構配合後挽回了一部分損失，事件正進入司法/調查流程。';
+    } else if (['seek_help_slow','report_slow','negotiate_fail','borrowed','immediate_vanish'].includes(st)){
+      state.msg = '調查與追回過程緩慢且艱難，你需承擔部分損失或負擔。';
+    } else {
+      state.msg = '事件進展中…';
+    }
+    setMessage('劇情', state.msg);
+    setActions([]);
+    state.timers.push(setTimeout(createFinalButton, 900));
+  }
+
+  function verifyWithHospital(){
+    state.player.history.push(['decision','verify_hospital']);
+    state.msg = '你帶著所有截圖與對話內容到醫院/第三方窗口核對，窗口表示需調查。';
+    setMessage('劇情', state.msg);
+    setActions([]);
+    state.timers.push(setTimeout(() => {
+      state.result = Math.random() < 0.7 ? 'verified_fake' : 'verify_delay';
+      verifiedProcessing();
+    }, 900));
+  }
+
+  function createFinalButton(){
+    setActions([{ label: '查看結局與防詐提示', onClick: showFinal }]);
+  }
+
+  function restart(){
+    clearTimers();
+    state.player = { trust: 40, savings: 200000, loss: 0, history: [] };
+    state.result = null;
+    state.phase = 'intro';
+    $("finalCard").style.display = 'none';
+    setupIntro();
+  }
+
+  function init(){ setupIntro(); }
+
+  return { init };
+})();
+
+window.addEventListener('DOMContentLoaded', Game.init);
+</script>
+</body>
+</html>
