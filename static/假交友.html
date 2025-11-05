@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>假交友・投資詐財 — 互動模擬（HTML 版）</title>
+<style>
+  :root{
+    --bg:#fff5f8;           /* 背景淡粉 */
+    --bg-grad:#fff0f6;       /* 背景漸層頂色 */
+    --panel:#ffffff;         /* 面板白 */
+    --panel-border:#ffd6e6;  /* 面板邊框淡粉 */
+    --text:#31111d;          /* 文字深酒紅 */
+    --muted:#8b5e6b;         /* 次要文字玫瑰褐 */
+    --btn:#e91e63;           /* 主按鈕基準色 */
+    --btn2:#ff3e85;          /* 主按鈕漸層色 */
+    --btn-hover:#f06292;     /* 按鈕 Hover 亮粉 */
+    --accent:#ad1457;        /* 重點色 深梅紅 */
+    --radius:14px;
+    --shadow:0 10px 24px rgba(173,20,87,.12);
+    --maxw:1100px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--text);
+    font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC","Heiti TC", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    background:
+      radial-gradient(1200px 600px at 90% -20%, var(--bg-grad), transparent 70%),
+      radial-gradient(1000px 500px at -10% 110%, #ffe6f0, transparent 60%),
+      var(--bg);
+  }
+  .app{max-width:var(--maxw); margin:24px auto; padding:0 16px}
+  .title{font-size:28px; font-weight:800; margin:8px 0 16px;
+    background: linear-gradient(90deg, #ad1457, #e91e63 40%, #ff3e85);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+
+  .grid{display:grid; grid-template-columns: 1fr; gap:16px}
+  @media (min-width: 980px){
+    .grid{grid-template-columns: 1fr}
+  }
+
+  .panel{background:var(--panel); border-radius:var(--radius); box-shadow:var(--shadow);
+    border:1px solid var(--panel-border)}
+  .panel .inner{padding:16px}
+
+  .msg{min-height:160px; line-height:1.75}
+  .muted{color:var(--muted)}
+
+  .stats{display:flex; flex-wrap:wrap; gap:12px 24px}
+  .stat{padding:10px 12px; background:#ffe3ee; border:1px solid #ffc6da; border-radius:12px; font-size:15px}
+
+  .actions{display:flex; flex-direction:column; gap:12px; margin-top:8px}
+  .btn{appearance:none; border:none; border-radius:999px; padding:12px 18px; font-size:16px; color:#fff;
+       background:linear-gradient(180deg, var(--btn), var(--btn2)); cursor:pointer; transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+       box-shadow:0 6px 16px rgba(233,30,99,.25)}
+  .btn:hover{filter:saturate(1.05) brightness(1.02); transform:translateY(-1px); box-shadow:0 10px 24px rgba(233,30,99,.32)}
+  .btn:active{transform:translateY(0); box-shadow:0 4px 12px rgba(233,30,99,.28)}
+  .btn:focus-visible{outline:3px solid #ffb3cf; outline-offset:2px}
+  .btn:disabled{opacity:.6; cursor:not-allowed; transform:none}
+
+  .final-title{font-size:22px; font-weight:800; margin-bottom:8px; color:var(--accent)}
+  .tips{margin-top:8px}
+  .tips li{margin:6px 0}
+
+  .footer{margin:10px 0 0; font-size:13px}
+</style>
+</head>
+<body>
+  <main class="app" id="app">
+    <div class="title">假交友・投資詐財 — 互動模擬（HTML 版）</div>
+
+    <!-- 訊息區 -->
+    <section class="panel">
+      <div class="inner">
+        <div id="message" class="msg"></div>
+        <div class="actions" id="actions"></div>
+      </div>
+    </section>
+
+    <!-- 狀態/統計區 -->
+    <section class="panel">
+      <div class="inner">
+        <div class="stats">
+          <div class="stat" id="trust">信任指數：—</div>
+          <div class="stat" id="cash">現金：—</div>
+          <div class="stat" id="invested">投入／平台資金：—</div>
+          <div class="stat" id="debt">債務：—</div>
+        </div>
+        <div class="footer muted">說明：情節具隨機性；請留意投資監管、代開戶風險與詐騙徵兆。</div>
+      </div>
+    </section>
+
+    <!-- 結局區（顯示於完成時） -->
+    <section class="panel" id="finalPanel" style="display:none">
+      <div class="inner">
+        <div class="final-title">結局與教育提示</div>
+        <div id="outcome" style="margin:6px 0 12px"></div>
+        <div id="summary"></div>
+        <h4 style="margin:18px 0 8px">教育提示：</h4>
+        <ul class="tips">
+          <li>● 網路交友建立信任後的金錢邀約要特別小心。</li>
+          <li>● 若被邀投資，先查公司登記與金融監管資格，不要僅憑截圖。</li>
+          <li>● 切勿替他人代開戶或代收款，避免牽連親友。</li>
+          <li>● 遇到提款困難或恐嚇，立即向銀行與警方報案並保存證據。</li>
+          <li>● 分享你的遭遇，避免更多人被同樣手法利用。</li>
+        </ul>
+        <div class="actions" style="margin-top:16px">
+          <button class="btn" id="restartBtn">重新開始遊戲</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+// ==== 資料模型 ====
+class Player{
+  constructor(){
+    this.trust = 50;
+    this.cash = 120000; // 起始現金
+    this.invested = 0;
+    this.debt = 0;
+    this.history = []; // [ [scene, choice], ... ]
+  }
+}
+
+class Game{
+  constructor(){
+    this.player = new Player();
+    this.state = 'intro'; // intro, chat, invest_decide, post_invest, final
+    this.npc = '軒哥';
+    this.msg = '';
+    this.result = null;
+    this.storyStep = 0;
+  }
+}
+
+// ==== 工具 ====
+const $ = (sel)=>document.querySelector(sel);
+const messageEl = $('#message');
+const actionsEl = $('#actions');
+const trustEl = $('#trust');
+const cashEl = $('#cash');
+const investedEl = $('#invested');
+const debtEl = $('#debt');
+const finalPanel = $('#finalPanel');
+const outcomeEl = $('#outcome');
+const summaryEl = $('#summary');
+const restartBtn = $('#restartBtn');
+
+const fmt = (n)=> n.toLocaleString('zh-Hant-TW');
+
+function setMessage(html){
+  messageEl.innerHTML = html;
+}
+function clearActions(){ actionsEl.innerHTML = ''; }
+function addAction(label, handler){
+  const btn = document.createElement('button');
+  btn.className = 'btn';
+  btn.textContent = label;
+  btn.onclick = handler;
+  actionsEl.appendChild(btn);
+}
+function refreshStats(game){
+  const p = game.player;
+  trustEl.textContent = `信任指數：${p.trust}`;
+  cashEl.textContent = `現金：${fmt(p.cash)} 元`;
+  investedEl.textContent = `投入／平台資金：${fmt(p.invested)} 元`;
+  debtEl.textContent = `債務：${fmt(p.debt)}`;
+}
+
+function delay(ms){ return new Promise(r=>setTimeout(r, ms)); }
+function chance(prob){ return Math.random() < prob; }
+
+// ==== 場景 ====
+async function setupIntro(game){
+  game.state = 'intro';
+  setMessage(
+    `你是小雯，剛畢業搬到城市。某日在旅行討論群遇到自稱「${game.npc}」的人成為朋友，`+
+    `他溫和、有趣，常分享旅遊與咖啡店。你們私訊互動一段時間，彼此信任逐漸建立。`
+  );
+  clearActions();
+  addAction('繼續與軒哥聊天，增進信任', ()=>advanceChat(game));
+  addAction('保持淡然，不急深化私下關係', ()=>declineChat(game));
+  refreshStats(game);
+}
+
+async function advanceChat(game){
+  const p = game.player;
+  p.history.push(['intro','chat']);
+  p.trust += 10;
+  setMessage('你和軒哥見面幾次，他很體貼；在一次聊天中，他提到一個投資平台，表示自己有小額收益。他有意帶你試水。');
+  clearActions();
+  refreshStats(game);
+  await delay(900);
+  handleNpcOffer(game);
+}
+
+function declineChat(game){
+  const p = game.player;
+  p.history.push(['intro','decline']);
+  p.trust -= 5;
+  setMessage('你維持距離，軒哥仍偶爾互動，但你沒有進一步的投資接觸。');
+  clearActions();
+  addAction('回到群組，偶爾互動', ()=>setupIntro(game));
+  addAction('停止聯絡，結束事件', ()=>endSafe(game));
+  refreshStats(game);
+}
+
+function handleNpcOffer(game){
+  game.state = 'invest_decide';
+  setMessage('軒哥邀你試投：先小額試水。他傳來「出金紀錄截圖」與自己的小額收益圖表。\
+他說會陪你看流程。你要怎麼做？');
+  clearActions();
+  addAction('小額試投（3 萬）', ()=>processInvest(game, 30000));
+  addAction('詢問平台監管／公司登記等正式資訊', ()=>askProof(game));
+  addAction('拒絕參與任何投資', ()=>endSafe(game));
+  refreshStats(game);
+}
+
+async function processInvest(game, amount){
+  const p = game.player;
+  p.history.push(['invest_offer', amount]);
+  if(amount > p.cash){
+    setMessage('現金不足以投入該金額。');
+    clearActions();
+    addAction('回到群組，偶爾互動', ()=>setupIntro(game));
+    addAction('停止聯絡，結束事件', ()=>endSafe(game));
+    refreshStats(game);
+    return;
+  }
+  p.cash -= amount;
+  p.invested += amount;
+
+  clearActions();
+  refreshStats(game);
+  await delay(900);
+
+  if(chance(0.85)){
+    const profit = Math.floor(amount * (0.03 + Math.random()*0.02));
+    p.cash += profit;
+    game.msg = `你先投入 ${fmt(amount)} 元，平台顯示短期收益 ${fmt(profit)} 元。你感到興奮並對軒哥更信任。`;
+    p.trust += 12;
+    game.result = 'small_profit';
+  }else{
+    game.msg = '你投入後，軒哥開始延遲回覆。平台出金受阻，你感到不安。';
+    p.trust -= 15;
+    game.result = 'early_vanish';
+  }
+  setMessage(game.msg);
+  await delay(900);
+  afterInvestPhase(game);
+}
+
+async function askProof(game){
+  const p = game.player;
+  p.history.push(['ask_proof','asked']);
+  clearActions();
+  refreshStats(game);
+  await delay(900);
+  if(chance(0.6)){
+    setMessage('軒哥給你一些看起來專業的文件截圖（公司頁面、客服對話）。但你注意到部分資料模糊或非官方網址。');
+    p.trust += 4;
+    game.result = 'proof_given';
+  }else{
+    setMessage('軒哥閃避，不願詳細提供公司註冊資料，催促你快決定以免錯過。');
+    p.trust -= 8;
+    game.result = 'proof_denied';
+  }
+  await delay(900);
+  afterInvestPhase(game);
+}
+
+function afterInvestPhase(game){
+  clearActions();
+  const st = game.result;
+  if(st === 'small_profit'){
+    setMessage('短期有小利，你開始考慮加碼。軒哥提到內部專案，高額回報但需拉親友或代開戶。');
+    addAction('加碼投資（10 萬）', ()=>processAddInvest(game, 100000));
+    addAction('不加碼，觀察一段時間', ()=>observeMore(game));
+    addAction('向朋友推薦並代開戶（招募）', ()=>recruitFriend(game));
+  }else if(st === 'early_vanish' || st === 'proof_denied'){
+    setMessage('狀況不妙：對方或平台出現異常。你可以選擇立刻求助、嘗試談判或借款應急。');
+    addAction('立刻向銀行/警方報案', ()=>reportPolice(game));
+    addAction('向親友借款或動用信用（高風險）', ()=>borrowMoney(game));
+    addAction('嘗試私下與軒哥/窗口談判', ()=>negotiate(game));
+  }else if(st === 'proof_given'){
+    setMessage('軒哥提供的資料看似完整，你感覺放心但仍有疑慮。他提出邀請代開戶取得額外獎勵。');
+    addAction('保守：不代辦、先觀察', ()=>observeMore(game));
+    addAction('代為開戶並短期幫朋友操作', ()=>recruitFriend(game));
+    addAction('要求專業律師/銀行協助確認', ()=>reportPolice(game));
+  }else{
+    setMessage('情況模糊，請選擇下一步。');
+    addAction('結束並回家冷靜', ()=>endSafe(game));
+  }
+  refreshStats(game);
+}
+
+async function processAddInvest(game, amount){
+  const p = game.player;
+  p.history.push(['add_invest', amount]);
+  if(amount > p.cash){
+    setMessage('現金不足以加碼。');
+    clearActions();
+    addAction('回到群組，偶爾互動', ()=>setupIntro(game));
+    addAction('停止聯絡，結束事件', ()=>endSafe(game));
+    refreshStats(game);
+    return;
+  }
+  p.cash -= amount;
+  p.invested += amount;
+  clearActions(); refreshStats(game);
+  await delay(900);
+
+  if(chance(0.65)){
+    const profit = Math.floor(amount * (0.02 + Math.random()*0.03));
+    p.cash += profit;
+    setMessage(`你加碼 ${fmt(amount)} 元，短期仍顯示收益 ${fmt(profit)} 元，但風險持續累積。`);
+    p.trust += 8; game.result = 'added_benefit';
+  }else{
+    setMessage('你加碼後，平台開始稽核並要求將資金轉至指定出金帳戶。匯款後，軒哥與客服均失聯。');
+    p.trust -= 25; game.result = 'scam_locked';
+  }
+  await delay(900);
+  afterInvestPhase(game);
+}
+
+async function observeMore(game){
+  const p = game.player;
+  p.history.push(['observe','wait']);
+  clearActions(); refreshStats(game);
+  await delay(900);
+  if(chance(0.5)){
+    setMessage('你選擇觀察，之後平台出金正常，你避開了風險（幸運）。');
+    game.result = 'observed_safe';
+  }else{
+    setMessage('你選擇觀察，但平台突然公告操作規則變更，提款被延遲。');
+    game.result = 'observed_delay';
+  }
+  await delay(900);
+  afterInvestPhase(game);
+}
+
+async function recruitFriend(game){
+  const p = game.player;
+  p.history.push(['recruit','yes']);
+  clearActions(); refreshStats(game);
+  await delay(900);
+  if(chance(0.75)){
+    setMessage('你幫朋友代開戶並先行存款，平台後續要求補件並指定出金帳戶。朋友的資金也被牽連。');
+    p.trust += 5; game.result = 'recruited';
+  }else{
+    setMessage('你招募朋友後短期獲得小額分潤，但潛在風險仍高。');
+    p.trust += 8; game.result = 'recruited_benefit';
+  }
+  await delay(900);
+  afterInvestPhase(game);
+}
+
+async function reportPolice(game){
+  const p = game.player;
+  p.history.push(['report','police']);
+  clearActions(); refreshStats(game);
+  await delay(900);
+  if(chance(0.6)){
+    const recovered = Math.floor(p.invested * 0.4);
+    setMessage('你向警方與銀行報案，警方調查並凍結部分涉及帳戶，部分資金得以回收。');
+    p.cash += recovered; p.invested -= recovered; game.result = 'reported_success';
+  }else{
+    setMessage('報案後程序緩慢，資金追回有限。警方建議保留證據並等待調查。');
+    game.result = 'reported_slow';
+  }
+  await delay(900);
+  createFinalButton(game);
+}
+
+async function borrowMoney(game){
+  const p = game.player;
+  p.history.push(['borrow','yes']);
+  const amount = Math.min(400000, Math.floor(p.cash * 3));
+  p.cash += amount; p.debt += Math.floor(amount * 0.25);
+  setMessage(`你急於挽回局面而借款 ${fmt(amount)} 元，短期內現金增加但同時產生高額利息負擔（債務 ${fmt(p.debt)}）。`);
+  clearActions(); refreshStats(game);
+  game.result = 'borrowed';
+  await delay(900);
+  createFinalButton(game);
+}
+
+async function negotiate(game){
+  const p = game.player;
+  p.history.push(['negotiate','try']);
+  clearActions(); refreshStats(game);
+  await delay(900);
+  if(chance(0.3)){
+    setMessage('你與所謂窗口談判，對方同意短暫分期還款，情況暫時緩和但並不安全。');
+    game.result = 'negotiation_ok';
+  }else{
+    setMessage('談判失敗，對方強硬或失聯，情況惡化。');
+    p.debt += 200000; game.result = 'negotiation_fail';
+  }
+  await delay(900);
+  createFinalButton(game);
+}
+
+function endSafe(game){
+  const p = game.player;
+  p.history.push(['end','safe']);
+  setMessage('你保持距離或停止參與，避免了金錢損失——這是一個安全的選擇。');
+  game.result = 'safe';
+  createFinalButton(game);
+  refreshStats(game);
+}
+
+function createFinalButton(game){
+  clearActions();
+  addAction('查看結局與教育提示', ()=>finishGame(game));
+}
+
+function finishGame(game){
+  game.state = 'final';
+  finalPanel.style.display = '';
+  // 結局判定
+  const bad = new Set(['scam_locked','negotiation_fail','borrowed','recruited']);
+  const good = new Set(['safe','reported_success','observed_safe']);
+  let outcome;
+  if(bad.has(game.result) || (game.player.debt > 0 && game.player.debt > game.player.cash)){
+    outcome = '結局不理想：你可能遭受實質損失或負債。';
+  }else if(good.has(game.result)){
+    outcome = '你成功避免或減少損失。保持警覺是關鍵。';
+  }else{
+    outcome = '情況混合：有小利但仍有潛在風險，檢視教學提示以了解如何防範。';
+  }
+  outcomeEl.textContent = outcome;
+  summaryEl.innerHTML = `
+    <div>現金：${fmt(game.player.cash)} 元</div>
+    <div>投入／平台資金：${fmt(game.player.invested)} 元</div>
+    <div>債務：${fmt(game.player.debt)}</div>
+  `;
+  restartBtn.onclick = ()=>{
+    // 重置畫面
+    finalPanel.style.display = 'none';
+    launch();
+  };
+}
+
+// 啟動
+let GAME;
+function launch(){
+  GAME = new Game();
+  setupIntro(GAME);
+  refreshStats(GAME);
+}
+launch();
+</script>
+</body>
+</html>

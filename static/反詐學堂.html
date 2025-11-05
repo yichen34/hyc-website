@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>詐騙模擬入口</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f8ff;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #ff6f61;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 50px 20px;
+            gap: 20px;
+        }
+        .section {
+            flex: 1 1 40%; /* 每側占40%寬度，適應不同螢幕 */
+            max-width: 450px;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .section img {
+            width: 100%;
+            height: auto;
+            max-height: 200px; /* 限制圖片高度 */
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        @media (max-width: 768px) {
+            .section {
+                flex: 1 1 100%; /* 小螢幕時每列佔滿寬度 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        詐騙模擬入口
+    </header>
+    <main>
+        <div class="section">
+            <img src="Quiz-comic-pop-art-style-illustration-on-transparent-background-PNG.PNG" alt="圖片區(題目測驗)">
+            <button class="button" onclick="location.href='題目測驗.html'">題目測驗</button>
+        </div>
+        <div class="section">
+            <img src="pngtree-online-playable-abstract-video-game-with-vector-illustration-design-for-game-design-vector-png-image_47239586.JPG" alt="圖片區(互動遊戲)">
+            <button class="button" onclick="location.href='互動遊戲.html'">互動遊戲</button>
+        </div>
+    </main>
+</body>
+</html>
