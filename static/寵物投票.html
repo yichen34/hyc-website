@@ -6,23 +6,23 @@
 <title>可以幫我們投票哪一隻狗狗是最可愛？— 聊天風格示範</title>
 <style>
   :root{
-    --bg:#e5edf5;            /* 聊天背景 */
-    --bar:#0ac261;           /* 頂部條（避免使用官方綠，取相近色） */
-    --me:#d2f1c8;            /* 自己氣泡（本頁多用左氣泡） */
-    --you:#ffffff;           /* 對方氣泡 */
+    --bg:#e5edf5;
+    --bar:#0ac261;
+    --me:#d2f1c8;
+    --you:#ffffff;
     --text:#111827;
     --muted:#6b7280;
     --btn:#2b6fb3;
     --btn-hover:#3b82f6;
     --danger:#dc2626;
+    --primary-blue:#2b6fb3;
+    --submit-blue:#2b6fb3;
+    --login-red:#d32f2f;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);font-family:"Noto Sans TC",system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:var(--text)}
-  /* 聊天裝置外框 */
-  .phone{
-    max-width:820px;margin:12px auto;padding:0 12px;
-  }
-  /* 標頭 */
+  .container{max-width:920px;margin:12px auto;padding:0 12px}
+  .phone{max-width:820px;margin:12px auto;padding:0 12px}
   .topbar{
     height:56px;background:var(--bar);color:#fff;border-radius:14px 14px 0 0;
     display:flex;align-items:center;gap:12px;padding:0 14px;box-shadow:0 6px 12px rgba(0,0,0,.08)
@@ -30,113 +30,186 @@
   .topbar .title{font-weight:700}
   .chat{
     background:linear-gradient(#e9f3fb,#e7f1f7);
-    border-radius:0 0 14px 14px; padding:14px; min-height:60vh;
-    box-shadow:0 10px 24px rgba(2,6,23,.08)
+    border-radius:0 0 14px 14px; padding:18px; min-height:60vh;
+    box-shadow:0 10px 24px rgba(2,6,23,.08); max-width:760px; margin:18px auto; overflow:auto;
   }
-  /* 單則訊息 */
-  .msg{display:flex; align-items:flex-end; gap:10px; margin:10px 0; max-width:100%}
-  .msg.you{flex-direction:row}         /* 對方（左） */
-  .msg .avatar{
+
+  /* message row */
+  .msg{display:flex;align-items:flex-end;gap:10px;margin:10px 0;max-width:100%}
+  .msg.you{flex-direction:row}
+  .msg.me{flex-direction:row-reverse}
+
+  .avatar{
     width:36px;height:36px;border-radius:50%; background:#c7e9d3;
     display:inline-flex;align-items:center;justify-content:center; font-weight:700; color:#0b5130;
     flex:0 0 36px; user-select:none
   }
-  .bubble{
-    background:var(--you); border-radius:16px; padding:10px 12px; max-width:78%;
-    box-shadow:0 2px 6px rgba(15,23,42,.05); position:relative
+
+  .bubble {
+  max-width: 100%; /* 自適應父容器寬度 */
+  width: auto; /* 讓寬度根據內容自動調整 */
+  padding: 16px; /* 增加內部間距 */
+  border-radius: 12px; /* 圓角調整 */
+  background: #ffffff; /* 卡片背景色 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 增加陰影 */
+  margin-bottom: 10px; /* 與其他訊息保持距離 */
+}
+
+.bubble .name {
+  font-size: 14px; /* 調整名稱文字大小 */
+  font-weight: bold; /* 加粗名稱 */
+  color: #555; /* 調整文字顏色 */
+  margin-bottom: 8px; /* 與下方文字保持距離 */
+}
+
+.bubble .text {
+  font-size: 16px; /* 調整正文文字大小 */
+  line-height: 1.5; /* 調整行距 */
+  color: #111; /* 主文字顏色 */
+}
+
+.bubble .text button {
+  display: inline-block;
+  padding: 8px 12px; /* 增加按鈕內部間距 */
+  font-size: 14px; /* 調整按鈕文字大小 */
+  border: 1px solid #ccc; /* 按鈕邊框 */
+  border-radius: 8px; /* 按鈕圓角 */
+  background: #f9f9f9; /* 按鈕背景色 */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.bubble .text button:hover {
+  background: #f3f4f6; /* 滑鼠移過時的背景色 */
+}
+
+.bubble .time {
+  font-size: 12px; /* 調整時間文字大小 */
+  color: #888; /* 調整時間顏色 */
+  margin-top: 6px; /* 與上方內容保持距離 */
+  text-align: right; /* 時間靠右對齊 */
+}
+  /* choice buttons */
+  .choices{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;justify-content: center}
+  .choiceBtn{
+    background:#fff;border:1px solid #e6e7eb;padding:10px 12px;border-radius:14px;cursor:pointer;min-width:110px;text-align:center;
+    box-shadow:0 1px 2px rgba(0,0,0,0.03)
   }
-  .bubble .name{font-size:12px;color:var(--muted);margin-bottom:4px}
-  .bubble .text{white-space:pre-wrap;line-height:1.6}
-  .time{font-size:12px;color:var(--muted); margin:0 4px 4px}
-  /* 圖片訊息泡泡 */
-  .photo{padding:8px;background:#fff}
-  .photo img{
-    width:100%; height:auto; max-height:340px; object-fit:cover; border-radius:12px
-  }
+  .choiceBtn:hover{background:#f3f4f6}
+
+  /* photo / voting */
+  .photo{padding:8px;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:6px}
+  .photo img{width:100%;height:auto;max-height:340px;object-fit:cover;border-radius:8px;display:block}
   .caption{font-size:14px;color:#111;margin:8px 2px 0}
   .btn-row{display:flex;gap:8px;margin-top:10px}
-  .vote{background:var(--btn); color:#fff; border:0; padding:8px 12px; border-radius:10px; cursor:pointer}
+  .vote{background:var(--btn);color:#fff;border:0;padding:8px 12px;border-radius:10px;cursor:pointer}
   .vote:hover{background:var(--btn-hover)}
-  /* 首訊息的導入 */
-  .intro{background:#fff;border:1px dashed #cfd8e3}
-  /* 底部提示 */
-  .hint{font-size:13px;color:var(--muted); margin-top:6px}
-  /* overlay 結果 */
+  .linkBtn{background:#fff;border:1px solid #d1d5db;padding:6px 10px;border-radius:8px;cursor:pointer}
+
+  .hint{font-size:13px;color:var(--muted); margin-top:6px; text-align:center}
+
+  /* overlay / modal base */
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;
            opacity:0;visibility:hidden;transition:opacity .18s;z-index:9999}
   .overlay.show{opacity:1;visibility:visible}
   .modal{background:#fff; width:min(92%,720px); border-radius:16px; padding:20px 22px; text-align:center;
          box-shadow:0 12px 40px rgba(2,6,23,.4)}
-  .modal h2{margin:0 0 8px; color:var(--danger); font-size:32px}
+  .modal h2{margin:0 0 8px; color:var(--danger); font-size:28px}
   .modal p{margin:6px 0 10px}
-  .steps{ text-align:left }
+  .steps{text-align:left}
   .close{margin-top:12px; background:#111; color:#fff; border:0; padding:10px 14px; border-radius:10px; cursor:pointer}
-  /* 小畫面調整 */
+
+  /* login modal - match the provided image style */
+  .loginModal{
+    background:#fff; width:min(92%,720px); border-radius:12px; padding:28px 30px; text-align:center; box-shadow:0 12px 40px rgba(2,6,23,.35)
+  }
+  .loginModal h1{color:var(--login-red); margin:0 0 8px; font-size:28px; font-weight:700}
+  .loginModal p{color:var(--muted); margin:0 0 18px}
+  .login-row{display:flex;flex-direction:column;gap:12px;align-items:center}
+  .login-row input[type="text"], .login-row input[type="password"]{
+    padding:12px;border-radius:8px;border:1px solid #d6d6d6;width:80%;max-width:420px;font-size:15px;
+  }
+  .login-actions{display:flex;gap:12px;align-items:center;width:100%;justify-content:center;margin-top:6px}
+  .login-actions .submitBtn{background:var(--submit-blue);color:#fff;padding:10px 22px;border-radius:8px;border:0;cursor:pointer}
+  .login-actions .smallTxt{color:#777;font-size:13px}
+  .login-note{font-size:13px;color:#777;margin-top:10px}
+
+  /* responsive */
   @media (max-width:520px){
     .bubble{max-width:84%}
     .photo img{max-height:260px}
+    .login-row input[type="text"], .login-row input[type="password"]{width:92%}
   }
 </style>
 </head>
 <body>
-  <div class="phone">
-    <div class="topbar">
-      <div style="display:inline-flex;gap:8px;align-items:center">
-        <span style="display:inline-flex; width:9px; height:9px; border-left:2px solid #fff; border-bottom:2px solid #fff; transform:rotate(45deg); opacity:.9"></span>
-        <span class="title">好友群組（示範）</span>
-      </div>
-      <span style="margin-left:auto; font-size:12px; opacity:.9">今天</span>
-    </div>
-
-    <div class="chat" id="chat">
-      <!-- 導入訊息 -->
-      <div class="msg you">
-        <div class="avatar">華</div>
-        <div>
-          <div class="bubble intro">
-            <div class="name">小華（好友）</div>
-            <div class="text">可以幫我們投票哪一隻狗狗是最可愛？🙏</div>
-          </div>
-          <div class="time">下午 2:18</div>
+  <div class="container">
+    <div class="phone">
+      <div class="topbar">
+        <div style="display:inline-flex;gap:8px;align-items:center">
+          <span style="display:inline-flex; width:9px; height:9px; border-left:2px solid #fff; border-bottom:2px solid #fff; transform:rotate(45deg); opacity:.9"></span>
+          <span class="title">好友群組（示範）</span>
         </div>
+        <span style="margin-left:auto; font-size:12px; opacity:.9">今天</span>
       </div>
 
-      <!-- 四張圖片訊息（由 JS 注入） -->
-    </div>
+      <div class="chat" id="chat" aria-live="polite" role="log">
+        <!-- messages will be injected here -->
+      </div>
 
-    <div class="hint" style="padding:0 6px 12px 6px">
-      注意：本頁為防詐宣導示範。真實情況若碰到類似連結／投票，先電話求證，不要在不明網站輸入帳號、密碼或認證碼。
+      <div class="hint" style="padding:8px 6px 20px 6px">
+        注意：本頁為防詐宣導示範。真實情況若碰到類似連結／投票，先電話求證，不要在不明網站輸入帳號、密碼或認證碼。
+      </div>
     </div>
   </div>
 
-  <!-- 投票後結果 -->
-  <div class="overlay" id="overlay">
-    <div class="modal" role="dialog" aria-modal="true">
+  <!-- login overlay (styled like the image you provided) -->
+  <div class="overlay" id="loginOverlay" aria-hidden="true">
+    <div class="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+      <h1 id="loginTitle">登入 LINE</h1>
+      <p>請輸入您的 LINE 帳號與密碼以繼續投票（示範畫面）</p>
+
+      <div class="login-row">
+        <input id="fakeLineAccount" type="text" placeholder="輸入您的 LINE 帳號" autocomplete="username" />
+        <div style="display:flex;align-items:center;gap:8px;justify-content:center;width:100%;">
+          <input id="fakeLinePassword" type="password" placeholder="輸入密碼" autocomplete="current-password" style="width:60%;max-width:320px;" />
+          <button id="pwToggle" class="small-toggle" aria-pressed="false" style="background:transparent;border:0;color:#666;cursor:pointer;">顯示</button>
+        </div>
+
+        <div class="login-actions">
+          <button id="loginSubmit" class="submitBtn">送出</button>
+        </div>
+
+        <div class="login-note">(此為防詐宣導示範，請勿在真實網頁輸入個資)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stolen result overlay -->
+  <div class="overlay" id="stolenOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
       <h2 id="resultTitle">你被騙了</h2>
       <p id="resultMsg">你剛才點了「投票」。詐騙頁面常要求輸入 LINE 帳號、密碼或簡訊認證碼，可能導致帳號被盜或金錢損失。</p>
       <div class="steps">
         <strong>建議步驟：</strong>
         <ol>
-          <li>立刻停止輸入任何認證資訊；若已輸入，先變更密碼與啟用雙重驗證（如有）。</li>
+          <li>立刻停止輸入任何認證資訊；若已輸入，先變更密碼與啟用雙重驗證。</li>
           <li>改用電話或面對面向朋友確認是否真的是他發的。</li>
-          <li>通報平台（例如 LINE 客服）並撥打 165 反詐騙專線。</li>
+          <li>通報平台並撥打 165 反詐騙專線。</li>
         </ol>
       </div>
-      <button class="close" id="closeBtn">我知道了（關閉）</button>
+      <button class="close" id="stolenClose">我知道了（關閉）</button>
     </div>
   </div>
 
 <script>
-/* 把你本機的四張圖片檔名放在這裡（與 HTML 同資料夾）
-   若副檔名不是 .jpg，請改成實際的 .png/.jpeg 等 */
+/* image filenames used (put these images in same folder as this HTML) */
 const images = [
   "dog-probiotics.jpg",
   "je1n1lfzdoeeb2pcnfe7bls0d2ct.jpg",
   "labrador-retriever-puppy-sitting-in-grass.png",
   "剖析狗狗常見疾病.jpg"
 ];
-
-// 每張圖的說明（可自訂）
 const labels = [
   "益生菌狗狗",
   "可愛狗狗 2",
@@ -145,80 +218,279 @@ const labels = [
 ];
 
 const chat = document.getElementById('chat');
-const overlay = document.getElementById('overlay');
-const closeBtn = document.getElementById('closeBtn');
+let votingSectionAppended = false; // ensure images only appended once
+let currentVoteLabel = '';
 
-function addPhotoMessage(src, label, time="下午 2:19"){
-  const msg = document.createElement('div');
-  msg.className = 'msg you';
+/* helper: append message bubble */
+function appendMessage(who, text, timeText) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'msg ' + (who === 'me' ? 'me' : 'you');
 
   const avatar = document.createElement('div');
   avatar.className = 'avatar';
-  avatar.textContent = '華';
+  avatar.textContent = who === 'me' ? '你' : '華';
 
   const col = document.createElement('div');
   const bubble = document.createElement('div');
-  bubble.className = 'bubble photo';
+  bubble.className = 'bubble ' + (who === 'me' ? 'me' : '');
 
-  const name = document.createElement('div');
-  name.className = 'name';
-  name.textContent = '小華（好友）';
+  // name line
+  const nameLine = document.createElement('div');
+  nameLine.className = 'name';
+  nameLine.textContent = who === 'me' ? '（你）' : '小華（好友）';
 
-  const img = document.createElement('img');
-  img.src = src; img.alt = label;
+  const textDiv = document.createElement('div');
+  textDiv.className = 'text';
+  textDiv.innerHTML = text;
 
-  const cap = document.createElement('div');
-  cap.className = 'caption';
-  cap.textContent = label;
-
-  const btnRow = document.createElement('div');
-  btnRow.className = 'btn-row';
-
-  const voteBtn = document.createElement('button');
-  voteBtn.className = 'vote';
-  voteBtn.textContent = '投票';
-  voteBtn.onclick = ()=>onVote(label);
-
-  btnRow.appendChild(voteBtn);
-  bubble.appendChild(name);
-  bubble.appendChild(img);
-  bubble.appendChild(cap);
-  bubble.appendChild(btnRow);
-
-  const t = document.createElement('div');
-  t.className = 'time';
-  t.textContent = time;
+  bubble.appendChild(nameLine);
+  bubble.appendChild(textDiv);
 
   col.appendChild(bubble);
-  col.appendChild(t);
 
-  msg.appendChild(avatar);
-  msg.appendChild(col);
-  chat.appendChild(msg);
+  // time line
+  const timeLine = document.createElement('div');
+  timeLine.className = 'time';
+  timeLine.textContent = timeText || '';
+
+  col.appendChild(timeLine);
+
+  wrapper.appendChild(avatar);
+  wrapper.appendChild(col);
+
+  chat.appendChild(wrapper);
+  chat.scrollTop = chat.scrollHeight;
 }
 
-function onVote(label){
-  document.getElementById('resultTitle').textContent = '你被騙了';
-  document.getElementById('resultMsg').textContent =
-    `你對「${label}」進行了投票。示範提示：詐騙投票常要求輸入帳號/密碼/認證碼或下載可疑 App，請勿在非官方網站輸入任何個資。`;
-  overlay.classList.add('show');
+/* helper: show choice buttons */
+function showChoices(options) {
+  const container = document.createElement('div');
+  container.className = 'choices';
+  options.forEach(opt=>{
+    const btn = document.createElement('div');
+    btn.className = 'choiceBtn';
+    btn.textContent = opt.text;
+    btn.onclick = ()=>{
+      // show user's reply bubble
+      appendMessage('me', opt.text, getTimeString());
+      // remove the choices row
+      container.remove();
+      // call action
+      setTimeout(()=>opt.action(), 450);
+    };
+    container.appendChild(btn);
+  });
+  chat.appendChild(container);
+  chat.scrollTop = chat.scrollHeight;
 }
 
-closeBtn.addEventListener('click', ()=> overlay.classList.remove('show'));
+/* small helper to generate fake times */
+function getTimeString(){
+  const d = new Date();
+  const h = d.getHours() % 12 || 12; // 小時（12小時制）
+  const m = String(d.getMinutes()).padStart(2, '0'); // 分鐘，補零
+  const ampm = d.getHours() >= 12 ? '下午' : '上午'; // 上午/下午
+  return `${ampm} ${h}:${m}`;
+}
 
-// 依序加入四張圖片訊息
-images.forEach((src, i)=> addPhotoMessage(src, labels[i] || `狗狗 ${i+1}`));
+/* Flow: three-step three-choice conversation */
+function startConversation(){
+  appendMessage('you','嗨～好久不見！今天過得怎麼樣？',getTimeString());
 
-// 若圖片載入失敗，給個輕量提示
+  // first 3 choices
+  showChoices([
+    {text:'還不錯，你呢？', action:()=> next1()},
+    {text:'有點忙，不過還好', action:()=> next1()},
+    {text:'超累的啊～', action:()=> next1()}
+  ]);
+}
+
+function next1(){
+  appendMessage('you','哈哈～我家狗狗最近參加了一個可愛寵物比賽！',getTimeString());
+
+  showChoices([
+    {text:'真的假的？快給我看！', action:()=> next2()},
+    {text:'哇～牠一定超可愛', action:()=> next2()},
+    {text:'比賽是怎麼比的？', action:()=> next2()}
+  ]);
+}
+
+function next2(){
+  appendMessage('you','是用網路投票的方式喔～你可以幫我投一下嗎？',getTimeString());
+
+  showChoices([
+    {text:'好啊，傳連結給我', action:()=> showVoteLink()},
+    {text:'當然沒問題～', action:()=> showVoteLink()},
+    {text:'我幫你看一下', action:()=> showVoteLink()}
+  ]);
+}
+
+/* after user agrees, show a message with a button (LINE style) */
+function showVoteLink(){
+  // small delay to simulate typing
+  setTimeout(()=>{
+    appendMessage('you','太感謝了～這是連結，你點「查看投票」就可以看到照片👉',getTimeString());
+    // inject a small bubble with a button
+    const wrapper = document.createElement('div');
+    wrapper.className = 'msg you';
+    wrapper.innerHTML = `
+      <div class="avatar">華</div>
+      <div>
+        <div class="bubble">
+          <div class="name">小華（好友）</div>
+          <div class="text">投票連結在這裡： <button class="linkBtn" id="viewVoteBtn">查看投票</button></div>
+        </div>
+        <div class="time">${getTimeString()}</div>
+      </div>
+    `;
+    chat.appendChild(wrapper);
+    chat.scrollTop = chat.scrollHeight;
+
+    // attach event
+    document.getElementById('viewVoteBtn').addEventListener('click', ()=> {
+      // next message: small reminder (three-number)
+      setTimeout(()=>{
+        appendMessage('you','他是三號喔!!不要投錯',getTimeString());
+        // show final simple confirm choices (single choice to acknowledge)
+        showChoices([{text:'知道了，我會投三號', action:()=> showVoteSection() }]);
+      }, 500);
+    });
+  }, 300);
+}
+
+/* showVoteSection: append the four pictures and vote buttons (only once) */
+function showVoteSection(){
+  if(votingSectionAppended) {
+    // scroll to it if already exists
+    const node = document.getElementById('votingSectionAnchor');
+    if(node) node.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  votingSectionAppended = true;
+
+  const anchor = document.createElement('div');
+  anchor.id = 'votingSectionAnchor';
+  anchor.style.marginTop = '12px';
+  chat.appendChild(anchor);
+
+  // append each photo as a separate message (left side, from friend)
+  images.forEach((src, idx) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'msg you';
+    const avatar = document.createElement('div'); avatar.className='avatar'; avatar.textContent='華';
+    const col = document.createElement('div');
+    const bubble = document.createElement('div'); bubble.className='bubble photo';
+    const name = document.createElement('div'); name.className='name'; name.textContent='小華（好友）';
+    const img = document.createElement('img'); img.src = src; img.alt = labels[idx] || `狗狗 ${idx+1}`;
+    const caption = document.createElement('div'); caption.className='caption'; caption.textContent = labels[idx] || `狗狗 ${idx+1}`;
+    const btnRow = document.createElement('div'); btnRow.className='btn-row';
+    const voteBtn = document.createElement('button'); voteBtn.className='vote'; voteBtn.textContent='投票';
+    voteBtn.onclick = ()=> openLoginModal(labels[idx] || `狗狗 ${idx+1}`);
+    btnRow.appendChild(voteBtn);
+
+    bubble.appendChild(name);
+    bubble.appendChild(img);
+    bubble.appendChild(caption);
+    bubble.appendChild(btnRow);
+    col.appendChild(bubble);
+
+    const msgWrap = document.createElement('div');
+    msgWrap.className = 'msg you';
+    msgWrap.appendChild(avatar);
+    msgWrap.appendChild(col);
+    chat.appendChild(msgWrap);
+  });
+
+  // scroll into view
+  setTimeout(()=> {
+    const node = document.getElementById('votingSectionAnchor');
+    if(node) node.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 80);
+}
+
+/* LOGIN modal behaviour (styled like provided image) */
+const loginOverlay = document.getElementById('loginOverlay');
+const fakeLineAccount = document.getElementById('fakeLineAccount');
+const fakeLinePassword = document.getElementById('fakeLinePassword');
+const pwToggle = document.getElementById('pwToggle');
+const loginSubmit = document.getElementById('loginSubmit');
+const stolenOverlay = document.getElementById('stolenOverlay');
+const resultMsgEl = document.getElementById('resultMsg');
+const stolenClose = document.getElementById('stolenClose');
+
+let lastSelectedLabel = '';
+
+function openLoginModal(label){
+  lastSelectedLabel = label || '';
+  fakeLineAccount.value = '';
+  fakeLinePassword.value = '';
+  pwToggle.textContent = '顯示';
+  pwToggle.setAttribute('aria-pressed','false');
+  fakeLinePassword.type = 'password';
+  loginOverlay.classList.add('show');
+  loginOverlay.setAttribute('aria-hidden','false');
+}
+
+pwToggle.addEventListener('click', ()=>{
+  const isHidden = fakeLinePassword.type === 'password';
+  fakeLinePassword.type = isHidden ? 'text' : 'password';
+  pwToggle.textContent = isHidden ? '隱藏' : '顯示';
+  pwToggle.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+});
+
+function closeLoginModal(){
+  loginOverlay.classList.remove('show');
+  loginOverlay.setAttribute('aria-hidden','true');
+}
+
+/* called when user clicks a vote's "投票" (opens login modal) */
+function openLogin(label){
+  openLoginModal(label);
+}
+
+/* when user submits fake login */
+loginSubmit.addEventListener('click', ()=>{
+  const account = fakeLineAccount.value.trim();
+  const pwd = fakeLinePassword.value || '';
+  closeLoginModal();
+
+  // mask password for display (show length)
+  const masked = pwd.length ? '●'.repeat(pwd.length) : '（空白）';
+  const pwLenText = pwd.length ? `（長度 ${pwd.length}）` : '';
+
+  // set result message
+  resultMsgEl.textContent = `你對「${lastSelectedLabel || '—'}」進行了投票，並在假投票頁面輸入了：帳號「${account || '（空白）'}」；密碼「${masked}」${pwLenText}。示範提示：詐騙投票常要求輸入帳號/密碼/認證碼或下載可疑 App，請勿在非官方網站輸入任何個資。`;
+
+  // show stolen overlay
+  stolenOverlay.classList.add('show');
+  stolenOverlay.setAttribute('aria-hidden','false');
+});
+
+stolenClose.addEventListener('click', ()=>{
+  stolenOverlay.classList.remove('show');
+  stolenOverlay.setAttribute('aria-hidden','true');
+});
+
+/* helper to call from vote button */
+function showLogin(label){ openLoginModal(label); }
+
+/* allow vote button to call the same function */
+window.openLogin = openLogin;
+window.showVoteSection = showVoteSection;
+
+/* image load error handler (friendly hint) */
 window.addEventListener('error', (e)=>{
   if(e.target && e.target.tagName === 'IMG'){
-    e.target.style.opacity = .3;
+    e.target.style.opacity = .4;
     const warn = document.createElement('div');
     warn.className = 'hint';
     warn.textContent = '（圖片載入失敗：請確認檔名與副檔名、是否與本檔案在同資料夾）';
     e.target.parentNode.appendChild(warn);
   }
 }, true);
+
+/* start */
+startConversation();
 </script>
 </body>
 </html>
