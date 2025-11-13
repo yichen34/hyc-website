@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>可以幫我們投票哪一隻狗狗是最可愛？— 聊天風格示範</title>
+<title>寵物投票</title>
 <style>
   :root{
     --bg:#e5edf5;
@@ -350,9 +350,9 @@ function showVoteLink(){
     document.getElementById('viewVoteBtn').addEventListener('click', ()=> {
       // next message: small reminder (three-number)
       setTimeout(()=>{
-        appendMessage('you','他是三號喔!!不要投錯',getTimeString());
+        appendMessage('you','他是第三個喔!!不要投錯了',getTimeString());
         // show final simple confirm choices (single choice to acknowledge)
-        showChoices([{text:'知道了，我會投三號', action:()=> showVoteSection() }]);
+        showChoices([{text:'知道了，我會投牠的', action:()=> showVoteSection() }]);
       }, 500);
     });
   }, 300);
