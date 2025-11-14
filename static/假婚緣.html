@@ -44,7 +44,6 @@
   .msg p{margin:0; line-height:1.7}
 
   .stats{padding:16px; display:flex; flex-wrap:wrap; gap:12px 16px}
-  /* 讓原本的 statline 直接變成粉色膠囊卡 */
   .statline{
     margin:0; font-weight:700;
     padding:10px 12px; background:#fde7ef; border-radius:10px; font-size:15px;
@@ -117,7 +116,7 @@
   </div>
 
 <script>
-// —— 原本的 JS 劇情邏輯完全保留 ——
+// —— JS 劇情邏輯（已改成用「繼續」按鈕，不再自動跳太快）——
 const Game = (() => {
   const state = {
     player: { trust: 40, savings: 200000, loss: 0, history: [] },
@@ -193,9 +192,11 @@ const Game = (() => {
     state.phase = 'chat';
     state.msg = '志遠對你體貼有加，幾次見面後他開始對你談到家裡的突發狀況，有天他私訊說家庭臨時發生醫療事故，需要短期周轉，希望你幫忙。';
     setMessage('劇情', state.msg);
-    setActions([]);
     updateStats();
-    state.timers.push(setTimeout(handleEmergency, 900));
+    // 改成需要玩家按「繼續」才進入下一階段
+    setActions([
+      { label: '繼續', onClick: handleEmergency }
+    ]);
   }
 
   function avoidRelationship(){
@@ -240,9 +241,11 @@ const Game = (() => {
       state.result = 'immediate_vanish';
     }
     setMessage('劇情', state.msg);
-    setActions([]);
     updateStats();
-    state.timers.push(setTimeout(postEmergencyPhase, 900));
+    // 使用「繼續」按鈕進入下一階段
+    setActions([
+      { label: '繼續', onClick: postEmergencyPhase }
+    ]);
   }
 
   function askProof(){
@@ -257,9 +260,10 @@ const Game = (() => {
       state.result = 'proof_refused';
     }
     setMessage('劇情', state.msg);
-    setActions([]);
     updateStats();
-    state.timers.push(setTimeout(postEmergencyPhase, 900));
+    setActions([
+      { label: '繼續', onClick: postEmergencyPhase }
+    ]);
   }
 
   function refuseMoney(){
@@ -268,9 +272,10 @@ const Game = (() => {
     state.player.trust -= 5;
     state.result = 'refused';
     setMessage('劇情', state.msg);
-    setActions([]);
     updateStats();
-    state.timers.push(setTimeout(postEmergencyPhase, 900));
+    setActions([
+      { label: '繼續', onClick: postEmergencyPhase }
+    ]);
   }
 
   function postEmergencyPhase(){
@@ -301,6 +306,7 @@ const Game = (() => {
       state.msg = '你拒絕匯款，志遠的態度變冷淡，關係中斷。你避免了金錢損失。';
       setActions([{ label: '結束並查看結局', onClick: createFinalButton }]);
     } else {
+      state.msg = '事件進展中…';
       setActions([{ label: '結束', onClick: createFinalButton }]);
     }
     setMessage('劇情', state.msg);
@@ -319,8 +325,10 @@ const Game = (() => {
       state.result = 'scammed_to_zero';
       setMessage('劇情', state.msg);
       updateStats();
-      setActions([]);
-      showFinal();
+      // 讓玩家自己決定何時看結局
+      setActions([
+        { label: '查看結局與防詐提示', onClick: showFinal }
+      ]);
       return;
     }
 
@@ -337,9 +345,10 @@ const Game = (() => {
       state.result = 'partial_recover';
     }
     setMessage('劇情', state.msg);
-    setActions([]);
     updateStats();
-    state.timers.push(setTimeout(verifiedProcessing, 900));
+    setActions([
+      { label: '繼續', onClick: verifiedProcessing }
+    ]);
   }
 
   function askThirdParty(){
@@ -352,8 +361,9 @@ const Game = (() => {
       state.result = 'verify_delay';
     }
     setMessage('劇情', state.msg);
-    setActions([]);
-    state.timers.push(setTimeout(verifiedProcessing, 900));
+    setActions([
+      { label: '繼續', onClick: verifiedProcessing }
+    ]);
   }
 
   function seekHelp(){
@@ -369,9 +379,10 @@ const Game = (() => {
       state.result = 'seek_help_slow';
     }
     setMessage('劇情', state.msg);
-    setActions([]);
     updateStats();
-    state.timers.push(setTimeout(verifiedProcessing, 900));
+    setActions([
+      { label: '繼續', onClick: verifiedProcessing }
+    ]);
   }
 
   function report(){
@@ -387,9 +398,10 @@ const Game = (() => {
       state.result = 'report_slow';
     }
     setMessage('劇情', state.msg);
-    setActions([]);
     updateStats();
-    state.timers.push(setTimeout(createFinalButton, 900));
+    setActions([
+      { label: '繼續', onClick: createFinalButton }
+    ]);
   }
 
   function borrow(){
@@ -400,9 +412,10 @@ const Game = (() => {
     state.msg = `你向親友或短期借貸借得 ${fmt(amount)} 元以挽救局面，但同時增加了額外負擔。`;
     state.result = 'borrowed';
     setMessage('劇情', state.msg);
-    setActions([]);
     updateStats();
-    state.timers.push(setTimeout(createFinalButton, 900));
+    setActions([
+      { label: '繼續', onClick: createFinalButton }
+    ]);
   }
 
   function negotiate(){
@@ -419,9 +432,10 @@ const Game = (() => {
       state.player.loss += 100000;
     }
     setMessage('劇情', state.msg);
-    setActions([]);
     updateStats();
-    state.timers.push(setTimeout(createFinalButton, 900));
+    setActions([
+      { label: '繼續', onClick: createFinalButton }
+    ]);
   }
 
   function verifiedProcessing(){
@@ -442,19 +456,26 @@ const Game = (() => {
       state.msg = '事件進展中…';
     }
     setMessage('劇情', state.msg);
-    setActions([]);
-    state.timers.push(setTimeout(createFinalButton, 900));
+    updateStats();
+    setActions([
+      { label: '繼續', onClick: createFinalButton }
+    ]);
   }
 
   function verifyWithHospital(){
     state.player.history.push(['decision','verify_hospital']);
     state.msg = '你帶著所有截圖與對話內容到醫院/第三方窗口核對，窗口表示需調查。';
     setMessage('劇情', state.msg);
-    setActions([]);
-    state.timers.push(setTimeout(() => {
-      state.result = Math.random() < 0.7 ? 'verified_fake' : 'verify_delay';
-      verifiedProcessing();
-    }, 900));
+    // 先顯示這段文字，玩家按「繼續」後再決定結果並進入 verifiedProcessing
+    setActions([
+      { 
+        label: '繼續', 
+        onClick: () => {
+          state.result = Math.random() < 0.7 ? 'verified_fake' : 'verify_delay';
+          verifiedProcessing();
+        }
+      }
+    ]);
   }
 
   function createFinalButton(){
@@ -479,6 +500,3 @@ window.addEventListener('DOMContentLoaded', Game.init);
 </script>
 </body>
 </html>
-
-
-
