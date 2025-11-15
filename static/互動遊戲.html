@@ -74,13 +74,26 @@
             0% { transform: translateY(0) translateX(0); opacity: 1; }
             100% { transform: translateY(-800px) translateX(200px); opacity: 0; }
         }
+
+        .back-btn {
+            position: fixed;
+            left: 50%;            /* 讓它水平置中，可調整 */
+            bottom: 60px;        /* 控制垂直位置 → 越大越上面 */
+            transform: translateX(-50%);  /* 讓 left:50% 真正置中 */
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            background: white;
+            border: 2px solid #333;
+            cursor: pointer;
+            z-index: 999;
+       }
     </style>
 </head>
 <body>
-    <button onclick="window.history.back()" 
-        style="margin: 20px; padding: 10px 20px; font-size: 16px; border-radius: 8px; cursor: pointer;">
+    <button class="back-btn" onclick="window.history.back()">
   ← 返回上一頁
-</button>
+</button
 
     <h1>選擇你要玩的遊戲</h1>
     <div class="button-container">
@@ -98,4 +111,5 @@
     <div class="particle" style="left: 90%; animation-delay: 3s;"></div>
 </body>
 </html>
+
 
