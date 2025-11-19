@@ -1,293 +1,332 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>詐騙防範知識小測驗</title>
-  <style>
-    body {
-      font-family: "Noto Sans TC", Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #1d3557, #457b9d);
-      color: #333;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>詐騙防範知識小測驗</title>
+<style>
+body {
+  font-family: "Noto Sans TC", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #1d3557, #457b9d);
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    .quiz-container {
-      width: 90%;
-      max-width: 600px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      padding: 30px;
-      text-align: center;
-      animation: fadeIn 0.8s ease;
-    }
+.quiz-container {
+  width: 90%;
+  max-width: 600px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+}
 
-    h1 {
-      color: #1d3557;
-      margin-bottom: 20px;
-      font-size: 1.8em;
-      letter-spacing: 1px;
-    }
+h1 {
+  color: #1d3557;
+  margin-bottom: 20px;
+  font-size: 1.8em;
+  letter-spacing: 1px;
+}
 
-    .question {
-      font-size: 1.2em;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: #333;
-    }
+.question {
+  font-size: 1.2em;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
 
-    .options {
-      list-style: none;
-      padding: 0;
-    }
+.options {
+  list-style: none;
+  padding: 0;
+}
 
-    .options li {
-      margin: 12px 0;
-    }
+.options li {
+  margin: 12px 0;
+}
 
-    .option-btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      background-color: #457b9d;
-      color: white;
-      font-size: 1em;
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
-    }
+.option-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #457b9d;
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
 
-    .option-btn:hover {
-      background-color: #1d3557;
-      transform: scale(1.03);
-    }
+.option-btn:hover {
+  background-color: #1d3557;
+  transform: scale(1.03);
+}
 
-    #next-btn {
-      margin-top: 20px;
-      padding: 12px 24px;
-      font-size: 1em;
-      border: none;
-      border-radius: 8px;
-      background-color: #2a9d8f;
-      color: white;
-      cursor: pointer;
-      display: none;
-      transition: all 0.2s ease;
-    }
+#next-btn {
+  margin-top: 20px;
+  padding: 12px 24px;
+  font-size: 1em;
+  border: none;
+  border-radius: 8px;
+  background-color: #2a9d8f;
+  color: white;
+  cursor: pointer;
+  display: none;
+  transition: all 0.2s ease;
+}
 
-    #next-btn:hover {
-      background-color: #21867a;
-    }
+#next-btn:hover {
+  background-color: #21867a;
+}
 
-    .result {
-      font-size: 1.4em;
-      margin-top: 20px;
-      color: #2a9d8f;
-      font-weight: bold;
-      display: none;
-      animation: fadeIn 1s ease;
-    }
+#explanation {
+  margin-top: 15px;
+  font-size: 1em;
+  color: #2a9d8f;
+  font-weight: bold;
+  display: none;
+  text-align: left;
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+.result {
+  font-size: 1.4em;
+  margin-top: 20px;
+  color: #2a9d8f;
+  font-weight: bold;
+  display: none;
+  animation: fadeIn 1s ease;
+}
 
-  .back-btn {
-    position: fixed;
-    left: 50%;            /* 讓它水平置中，可調整 */
-    bottom: 60px;        /* 控制垂直位置 → 越大越上面 */
-    transform: translateX(-50%);  /* 讓 left:50% 真正置中 */
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 8px;
-    background: white;
-    border: 2px solid #333;
-    cursor: pointer;
-    z-index: 999;
-  }
-  </style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.back-btn {
+  position: fixed;
+  left: 50%;
+  bottom: 60px;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  background: white;
+  border: 2px solid #333;
+  cursor: pointer;
+  z-index: 999;
+}
+</style>
 </head>
-
 <body>
-  <button class="back-btn" onclick="window.history.back()">
-  ← 返回上一頁
-</button>
-  <div class="quiz-container">
-    <h1>詐騙防範知識測驗</h1>
-    <div id="quiz"></div>
-    <button id="next-btn">下一題</button>
-    <div id="result" class="result"></div>
-  </div>
+<button class="back-btn" onclick="window.history.back()">← 返回上一頁</button>
 
-  <script>
-    const quizData = [
+<div class="quiz-container">
+  <h1>詐騙防範知識測驗</h1>
+  <div id="quiz"></div>
+  <div id="explanation"></div>
+  <button id="next-btn">下一題</button>
+  <div id="result" class="result"></div>
+</div>
+
+<script>
+const quizData = [
   {
     question: "收到簡訊說您信用卡被凍結，請點擊連結解凍，應該怎麼辦？",
-    options: ["點擊連結立即解凍", "忽略簡訊並刪除", "撥打簡訊提供的電話號碼確認"],
+    options: ["點擊連結處理", "忽略並刪除簡訊", "撥打簡訊中的電話確認"],
     correct: 1,
+    explanation: "銀行不會以簡訊連結要求解凍信用卡，這是典型釣魚詐騙。點擊連結或撥打電話都會有風險，因此應忽略並刪除簡訊。"
   },
   {
-    question: "陌生來電聲稱是警察，要求提供您的身份證號碼，應該？",
-    options: ["立即配合提供", "要求對方出示證明再決定", "掛斷電話並聯繫當地警局核實"],
+    question: "陌生來電自稱警察，要求提供您的身分證號碼，應該？",
+    options: ["馬上照辦提供資料", "要求對方先發證明文件", "掛斷電話並自行聯絡當地警局"],
     correct: 2,
+    explanation: "真正的警察不會透過電話索取個人資料。最安全的做法是掛斷電話，並自行聯絡警局查證。"
   },
   {
-    question: "有人自稱公司老闆，要求您立即轉賬到指定賬戶，應該？",
-    options: ["確認對方身份後再處理", "直接轉賬避免延誤", "聯繫公司核實信息"],
+    question: "有人自稱公司老闆，要求您立即匯款至指定帳戶，應該？",
+    options: ["立即匯款避免被責備", "用其他方式向公司人員確認", "詢問對方為何這麼急"],
+    correct: 1,
+    explanation: "直接匯款給陌生人或假冒上司都是詐騙陷阱。應先向公司其他同事確認訊息的真實性。"
+  },
+  {
+    question: "社交平台有人推銷高回報投資，應該怎麼辦？",
+    options: ["馬上加入投資避免錯過機會", "封鎖對方並停止對話", "先詢問投資細節再考慮"],
+    correct: 1,
+    explanation: "高回報投資往往是詐騙誘餌。安全做法是封鎖並停止與陌生人的交易或投資接觸。"
+  },
+  {
+    question: "自稱快遞公司來電要求提供銀行帳戶以便賠償，應該？",
+    options: ["提供資料讓他們賠償", "要求對方提供更多證據", "直接掛斷電話"],
     correct: 2,
+    explanation: "真實快遞公司不會電話要求提供銀行帳號。安全做法是掛斷電話，不提供個人財務資訊。"
   },
   {
-    question: "在社交平台遇到陌生人說有高回報投資機會，應該怎麼辦？",
-    options: ["立即投資以免錯過機會", "忽略對方並封鎖", "詢問更多細節後再決定"],
+    question: "網購賣家要求脫離平台、用私下轉帳交易，應該？",
+    options: ["同意對方比較方便", "拒絕並堅持使用平台交易", "視情況考慮是否配合"],
     correct: 1,
+    explanation: "離開平台私下交易無保障，容易受騙。正確做法是拒絕並堅持平台內交易。"
   },
   {
-    question: "自稱快遞公司來電，說包裹丟失需要提供銀行信息賠償，應該？",
-    options: ["提供銀行信息以便處理", "要求對方提供更多證據", "直接掛斷電話"],
+    question: "收到陌生郵件含銀行登入連結，應該？",
+    options: ["點擊連結登入帳戶", "刪除郵件", "打電話向銀行客服確認"],
+    correct: 1,
+    explanation: "釣魚郵件常誘導使用者點擊假網站登入銀行。應刪除郵件，必要時自行聯絡銀行客服確認。"
+  },
+  {
+    question: "有人自稱親友急需借錢但無法視訊確認身份，應該？",
+    options: ["立刻匯錢幫忙", "要求對方提供可驗證的證據", "直接向家人或其他親友求證"],
     correct: 2,
+    explanation: "即使是熟人聲稱急需資金，也需核實身份。最安全的做法是聯絡其他親友確認或要求證明。"
   },
   {
-    question: "網購時，對方要求您脫離平台直接轉賬交易，應該？",
-    options: ["同意對方建議", "拒絕並堅持通過平台交易", "與對方協商再決定"],
+    question: "收到通知說您中了大量獎金，需先付手續費才能領取，應該？",
+    options: ["支付手續費領獎", "刪除並無視訊息", "詢問領獎方式"],
     correct: 1,
+    explanation: "中獎要求先付費通常是詐騙。安全做法是刪除訊息並不付款。"
   },
   {
-    question: "收到陌生郵件，內附連結要求登錄銀行賬戶，應該？",
-    options: ["點擊連結登錄", "忽略郵件並刪除", "聯繫銀行客服核實"],
-    correct: 1,
-  },
-  {
-    question: "有人自稱親友，急需借錢但無法當面確認身份，應該？",
-    options: ["立即匯款幫助對方", "要求對方提供更多證據", "聯繫其他親友核實信息"],
+    question: "陌生人自稱技術客服，要求遠端控制您的電腦，應該？",
+    options: ["同意並讓對方操作", "詢問更多細節再決定", "拒絕並自行聯絡官方客服"],
     correct: 2,
+    explanation: "遠端控制電腦可能導致資料外洩或被安裝木馬。應拒絕並聯絡官方客服查證。"
   },
   {
-    question: "收到通知說您中了巨額獎金，需支付手續費領取，應該？",
-    options: ["支付手續費領獎", "直接忽略並刪除", "聯繫對方確認細節"],
+    question: "接到電話說家人遭遇意外，需要先匯款，應該？",
+    options: ["匯款避免耽誤救援", "先聯絡家人或醫院確認狀況", "詢問更多細節"],
     correct: 1,
+    explanation: "緊急匯款誘惑是詐騙手法。正確做法是先聯絡家人或醫院核實情況。"
   },
   {
-    question: "陌生人聲稱是技術支持，要求遠程控制您的電腦，應該？",
-    options: ["授權對方操作", "詢問對方更多細節", "拒絕並聯繫官方客服"],
+    question: "有人提供高薪工作，但必須先繳押金，應該？",
+    options: ["付押金以取得機會", "拒絕並報警", "調查公司背景再決定"],
+    correct: 1,
+    explanation: "工作需先付押金通常是詐騙。應拒絕並可向警方報案或查證公司背景。"
+  },
+  {
+    question: "社群軟體有人邀請加入快速賺錢群組，應該？",
+    options: ["加入看看", "拒絕並封鎖對方", "問朋友群組是否可靠"],
+    correct: 1,
+    explanation: "快速賺錢群組多為詐騙誘餌。安全做法是拒絕並封鎖陌生邀請。"
+  },
+  {
+    question: "有人自稱銀行客服，要求提供驗證碼，應該？",
+    options: ["提供驗證碼", "要求對方報告更多資料", "拒絕並自行撥打官方客服電話"],
     correct: 2,
+    explanation: "銀行不會要求透過電話或訊息提供驗證碼。應拒絕並自行撥打官方客服電話確認。"
   },
   {
-    question: "接到電話說家人發生意外，需要立即匯款，應該？",
-    options: ["詢問更多細節後匯款", "聯繫家人或相關機構核實", "立即匯款避免延誤"],
+    question: "有人聲稱能幫你清除不良信用，但需先付費，應該？",
+    options: ["付費處理信用問題", "掛斷電話不理會", "詢問是否能後付款"],
     correct: 1,
+    explanation: "承諾清除信用問題並要求先付費通常是詐騙，應掛斷電話並不付款。"
   },
   {
-    question: "陌生人提供高薪工作機會，但需先支付押金，應該？",
-    options: ["支付押金獲得機會", "拒絕並報警", "先查詢對方公司背景"],
+    question: "遊戲中有人要求提供帳號密碼幫你升級，應該？",
+    options: ["提供帳密讓他幫忙", "拒絕並保護帳戶安全", "先問他可信度"],
     correct: 1,
+    explanation: "提供帳號密碼可能導致帳號被盜。應拒絕並保護帳號安全。"
   },
   {
-    question: "在社交軟件中，有人邀請加入賺錢群，應該？",
-    options: ["加入並嘗試", "忽略並封鎖對方", "詢問朋友是否可信"],
-    correct: 1,
-  },
-  {
-    question: "接到銀行客服電話，要求提供驗證碼核實信息，應該？",
-    options: ["提供驗證碼", "要求對方提供更多資料", "拒絕並聯繫官方客服"],
+    question: "接到電話說您涉案需支付保證金，否則將拘留，應該？",
+    options: ["立即付款避免麻煩", "詢問更多細節", "掛斷並直接聯絡警方"],
     correct: 2,
+    explanation: "假冒司法機關要求保證金是詐騙。應掛斷電話並直接聯絡警方確認。"
   },
   {
-    question: "有人聲稱能幫您清除不良信用記錄，需提前支付費用，應該？",
-    options: ["支付費用解決問題", "拒絕並掛斷電話", "詢問對方是否有其他方案"],
-    correct: 1,
-  },
-  {
-    question: "在網絡遊戲中，有人索要您的帳號密碼以幫助升級，應該？",
-    options: ["提供密碼給對方", "拒絕並保護帳號安全", "詢問對方是否可信"],
-    correct: 1,
-  },
-  {
-    question: "接到電話說您涉嫌犯罪，需立即繳納保證金，應該？",
-    options: ["立即支付保證金", "詢問對方更多細節", "掛斷電話並聯繫警方"],
+    question: "有人聲稱在低價出售名牌商品，需要先匯款保留，應該？",
+    options: ["匯款以確保買到", "要求貨到付款", "拒絕交易"],
     correct: 2,
+    explanation: "低價商品要求先匯款通常是詐騙。安全做法是拒絕交易或要求貨到付款。"
   },
   {
-    question: "有人聲稱低價出售名牌產品，但需提前匯款，應該？",
-    options: ["提前匯款購買", "要求貨到付款", "拒絕並忽略對方"],
-    correct: 2,
-  },
-  {
-    question: "收到電子郵件說您中了獎，需直接回復個人信息領取，應該？",
-    options: ["回復郵件領獎", "忽略並刪除郵件", "聯繫對方確認細節"],
+    question: "電子郵件通知您中獎，請回覆個人資料領取，應該？",
+    options: ["回覆資料領獎", "忽略並刪除郵件", "與對方確認活動內容"],
     correct: 1,
+    explanation: "中獎要求提供個資通常是詐騙。應忽略並刪除郵件，不回覆個人資料。"
   },
   {
-    question: "在社交媒體上，有人主動借錢但無法提供身份證明，應該？",
-    options: ["借錢幫助對方", "要求對方提供更多證據", "直接拒絕"],
+    question: "社交平台有人主動借錢但無法證明身分，應該？",
+    options: ["借錢給他", "要求出示身份證明", "直接拒絕"],
     correct: 2,
+    explanation: "陌生人借錢且無法驗證身份可能是詐騙。應要求提供身份證明，或直接拒絕。"
   },
 ];
 
-    const quizContainer = document.getElementById("quiz");
-    const nextBtn = document.getElementById("next-btn");
-    const result = document.getElementById("result");
 
-    let currentQuestion = 0;
-    let score = 0;
+const quizContainer = document.getElementById("quiz");
+const nextBtn = document.getElementById("next-btn");
+const explanationDiv = document.getElementById("explanation");
+const result = document.getElementById("result");
 
-    function loadQuestion() {
-      const q = quizData[currentQuestion];
-      quizContainer.innerHTML = `
-        <div class="question">${q.question}</div>
-        <ul class="options">
-          ${q.options
-            .map(
-              option =>
-                `<li><button class="option-btn" onclick="checkAnswer('${option}')">${option}</button></li>`
-            )
-            .join("")}
-        </ul>
-      `;
-      nextBtn.style.display = "none";
+let currentQuestion = 0;
+let score = 0;
+
+function loadQuestion() {
+  const q = quizData[currentQuestion];
+  quizContainer.innerHTML = `
+    <div class="question">${q.question}</div>
+    <ul class="options">
+      ${q.options.map((option, index) => 
+        `<li><button class="option-btn" data-index="${index}">${option}</button></li>`
+      ).join('')}
+    </ul>
+  `;
+  explanationDiv.style.display = "none";
+  nextBtn.style.display = "none";
+
+  const buttons = document.querySelectorAll(".option-btn");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => checkAnswer(parseInt(btn.dataset.index)));
+  });
+}
+
+function checkAnswer(selectedIndex) {
+  const q = quizData[currentQuestion];
+  const buttons = document.querySelectorAll(".option-btn");
+
+  buttons.forEach((btn, index) => {
+    btn.disabled = true;
+    if(index === q.correct) {
+      btn.style.backgroundColor = "#2a9d8f"; // 正確答案綠色
+    } else if(index === selectedIndex) {
+      btn.style.backgroundColor = "#e63946"; // 選錯紅色
     }
+  });
 
-    function checkAnswer(answer) {
-      const correct = quizData[currentQuestion].answer;
-      const buttons = document.querySelectorAll(".option-btn");
+  // 計分
+  if(selectedIndex === q.correct) score++;
 
-      buttons.forEach(btn => {
-        btn.disabled = true;
-        if (btn.textContent === correct) {
-          btn.style.backgroundColor = "#2a9d8f";
-        } else if (btn.textContent === answer) {
-          btn.style.backgroundColor = "#e63946";
-        }
-      });
+  // 顯示解析
+  explanationDiv.style.display = "block";
+  explanationDiv.textContent = "解析： " + q.explanation;
 
-      if (answer === correct) score++;
-      nextBtn.style.display = "inline-block";
-    }
+  nextBtn.style.display = "inline-block";
+}
 
-    nextBtn.addEventListener("click", () => {
-      currentQuestion++;
-      if (currentQuestion < quizData.length) {
-        loadQuestion();
-      } else {
-        showResult();
-      }
-    });
-
-    function showResult() {
-      quizContainer.style.display = "none";
-      nextBtn.style.display = "none";
-      result.style.display = "block";
-      result.textContent = `你答對了 ${score} / ${quizData.length} 題！`;
-    }
-
+nextBtn.addEventListener("click", () => {
+  currentQuestion++;
+  if(currentQuestion < quizData.length) {
     loadQuestion();
-  </script>
+  } else {
+    showResult();
+  }
+});
+
+function showResult() {
+  quizContainer.style.display = "none";
+  explanationDiv.style.display = "none";
+  nextBtn.style.display = "none";
+  result.style.display = "block";
+  result.textContent = `你答對了 ${score} / ${quizData.length} 題！`;
+}
+
+loadQuestion();
+</script>
 </body>
 </html>
-s
